@@ -23,7 +23,7 @@ bash jupyter.bash
 ## Installation
 
 ```shell
-jupyter labextension install @ibqn/jupyterlab-codecellbtn-extra
+jupyter labextension install @hso-nn/jupyterlab-codecellbtn-extra
 ```
 
 ## Development
