@@ -28,6 +28,10 @@ import {
     CommandRegistry,
 } from '@phosphor/commands';
 
+import {
+    ButtonGroup, Button,
+} from '@blueprintjs/core';
+
 import { IEditorServices } from '@jupyterlab/codeeditor';
 
 import '../style/index.css';
@@ -36,8 +40,6 @@ import '../style/index.css';
  * The CSS classes added to the cell footer.
  */
 const CELL_FOOTER_CLASS = 'jp-CellFooter';
-const CELL_FOOTER_DIV_CLASS = 'ccb-cellFooterContainer';
-const CELL_FOOTER_BUTTON_CLASS = 'ccb-cellFooterBtn';
 
 function activateCommands(app: JupyterFrontEnd, tracker: INotebookTracker): Promise<void> {
     // tslint:disable-next-line:no-console
@@ -70,6 +72,34 @@ function activateCommands(app: JupyterFrontEnd, tracker: INotebookTracker): Prom
                 if (current) {
                     const { context, content } = current;
                     NotebookActions.run(content, context.session);
+                    // current.content.mode = 'edit';
+                }
+            },
+            isEnabled,
+        });
+
+        commands.addCommand('run-all-above-codecell', {
+            label: 'Run Cell',
+            execute: args => {
+                const current = getCurrent(args);
+
+                if (current) {
+                    const { context, content } = current;
+                    NotebookActions.runAllAbove(content, context.session);
+                    // current.content.mode = 'edit';
+                }
+            },
+            isEnabled,
+        });
+
+        commands.addCommand('run-all-below-codecell', {
+            label: 'Run Cell',
+            execute: args => {
+                const current = getCurrent(args);
+
+                if (current) {
+                    const { context, content } = current;
+                    NotebookActions.runAllBelow(content, context.session);
                     // current.content.mode = 'edit';
                 }
             },
@@ -119,16 +149,32 @@ export class CellFooterWithButton extends ReactWidget implements ICellFooter {
 
     render() {
         return (
-            <div
-                className={CELL_FOOTER_DIV_CLASS}>
-                <button
-                    className={CELL_FOOTER_BUTTON_CLASS}
-                    onClick={event => {
+            <ButtonGroup
+                minimal={true}
+                className={'ccb-cellFooterContainer'}
+            >
+                <Button
+                    icon='play'
+                    onClick={(event: any) => {
                         this.commands.execute('run-selected-codecell');
-                    }}>
-                    run
-                </button>
-            </div>
+
+                    }}
+                    className={'ccb-cellFooterBtn'} />
+                <Button
+                    icon='step-backward'
+                    onClick={(event: any) => {
+                        this.commands.execute('run-all-above-codecell');
+                    }}
+                    className={'ccb-cellFooterBtn'} />
+                <Button
+                    icon='step-forward'
+                    onClick={(event: any) => {
+                        this.commands.execute('run-all-below-codecell');
+                    }}
+                    className={'ccb-cellFooterBtn'}
+                    alt='Run all below'
+                    />
+            </ButtonGroup>
         );
     }
 }
